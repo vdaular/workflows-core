@@ -37,20 +37,26 @@ public class DefaultActivitySchedulerMiddleware : WorkflowExecutionMiddleware
 
         context.TransitionTo(WorkflowSubStatus.Executing);
         
+        // TODO: Invoke a strategy that can create a commit state.
+        
         while (scheduler.HasAny)
         {
             // Do not start a workflow if cancellation has been requested.
             if (context.CancellationTokens.ApplicationCancellationToken.IsCancellationRequested)
                 break;
             
+            // TODO: Invoke a strategy that can create a commit state.
             var currentWorkItem = scheduler.Take();
             await ExecuteWorkItemAsync(context, currentWorkItem);
+            // TODO: Invoke a strategy that can create a commit state.
         }
         
         await Next(context);
         
         if (context.Status == WorkflowStatus.Running)
             context.TransitionTo(context.AllActivitiesCompleted() ? WorkflowSubStatus.Finished : WorkflowSubStatus.Suspended);
+        
+        // TODO: Invoke a strategy that can create a commit state.
     }
 
     private async Task ExecuteWorkItemAsync(WorkflowExecutionContext context, ActivityWorkItem workItem)
