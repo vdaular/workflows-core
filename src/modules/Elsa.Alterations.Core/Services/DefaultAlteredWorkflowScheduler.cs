@@ -1,8 +1,9 @@
+using Elsa.Alterations.Core.Contracts;
 using Elsa.Alterations.Core.Results;
 using Elsa.Workflows.Runtime.Contracts;
 using Elsa.Workflows.Runtime.Requests;
 
-namespace Elsa.Alterations.Core.Contracts;
+namespace Elsa.Alterations.Core.Services;
 
 /// <inheritdoc />
 public class DefaultAlteredWorkflowDispatcher : IAlteredWorkflowDispatcher

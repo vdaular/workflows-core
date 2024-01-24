@@ -208,9 +208,12 @@ internal class WorkflowInstance : WorkflowInstanceBase
 
     private async Task Update(WorkflowExecutionContext context)
     {
+        if (context.SubStatus != WorkflowSubStatus.Cancelled)
+            return;
+        
         using var scope = _scopeFactory.CreateScope();
         var extractor = scope.ServiceProvider.GetRequiredService<IWorkflowStateExtractor>();
-        var bookmarkPersistor = scope.ServiceProvider.GetRequiredService<IBookmarksPersister>();
+        var bookmarkPersister = scope.ServiceProvider.GetRequiredService<IBookmarksPersister>();
         var workflowState = extractor.Extract(context);
         var originalBookmarks = _workflowHost.WorkflowState.Bookmarks;
         
@@ -219,11 +222,9 @@ internal class WorkflowInstance : WorkflowInstanceBase
         await SaveSnapshotAsync();
         SaveWorkflowInstance(workflowState);
         var newBookmarks = workflowState.Bookmarks;
-        
         var diff = Diff.For(originalBookmarks, newBookmarks);
-
         var bookmarkRequest = new UpdateBookmarksRequest(workflowState.DefinitionId, diff, workflowState.CorrelationId);
-        await bookmarkPersistor.PersistBookmarksAsync(bookmarkRequest);
+        await bookmarkPersister.PersistBookmarksAsync(bookmarkRequest);
     }
 
     /// <inheritdoc />
@@ -247,7 +248,6 @@ internal class WorkflowInstance : WorkflowInstanceBase
         var activityInstanceId = request.ActivityInstanceId.NullIfEmpty();
         var activityHash = request.ActivityHash.NullIfEmpty();
         var cancellationToken = Context.CancellationToken;
-        
         var cancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _cancellationTokenSources.Add(cancellationTokenSource);
         cancellationToken = cancellationTokenSource.Token;

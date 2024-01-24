@@ -2,7 +2,7 @@ using Elsa.Abstractions;
 using Elsa.Workflows.Activities;
 using Elsa.Workflows.Management.Contracts;
 
-namespace Elsa.Server.Web;
+namespace Elsa.Server.Web.Endpoints.DynamicWorkflowExport.Get;
 
 public class DynamicWorkflowExportEndpoint(IWorkflowSerializer workflowSerializer) : ElsaEndpointWithoutRequest
 {

@@ -74,8 +74,8 @@ public partial class WorkflowExecutionContext : IExecutionContext
         Incidents = incidents.ToList();
 
         var appSource = CancellationTokenSource.CreateLinkedTokenSource(CancellationTokens.ApplicationCancellationToken);
-        _cancellationTokenSources.Add(appSource);
         var sysSource = CancellationTokenSource.CreateLinkedTokenSource(CancellationTokens.SystemCancellationToken);
+        _cancellationTokenSources.Add(appSource);
         _cancellationTokenSources.Add(sysSource);
         _cancellationRegistrations.Add(appSource.Token.Register(CancelWorkflow));
         _cancellationRegistrations.Add(sysSource.Token.Register(CancelWorkflow));
@@ -536,14 +536,10 @@ public partial class WorkflowExecutionContext : IExecutionContext
             throw new Exception($"Cannot transition from {SubStatus} to {subStatus}");
 
         SubStatus = subStatus;
-
-        //For now only trigger on Cancelled, since the other statuses are handling via the host/runner
-        if (SubStatus == WorkflowSubStatus.Cancelled
-            && _statusUpdatedCallback is not null)
-            _statusUpdatedCallback(this);
         
-        if (Status == WorkflowStatus.Finished
-            || SubStatus == WorkflowSubStatus.Suspended)
+        _statusUpdatedCallback?.Invoke(this);
+
+        if (Status == WorkflowStatus.Finished || SubStatus == WorkflowSubStatus.Suspended)
         {
             foreach (var registration in _cancellationRegistrations)
             {
