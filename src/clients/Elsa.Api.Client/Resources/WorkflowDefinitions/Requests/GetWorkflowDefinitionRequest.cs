@@ -5,8 +5,4 @@ namespace Elsa.Api.Client.Resources.WorkflowDefinitions.Requests;
 /// </summary>
 public class GetWorkflowDefinitionRequest
 {
-    /// <summary>
-    /// Gets or sets a value indicating whether the response should include the root activity of composite activities.
-    /// </summary>
-    public bool IncludeCompositeRoot { get; set; }
 }

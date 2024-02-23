@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Text.Json;
 using Elsa.Abstractions;
@@ -8,7 +9,6 @@ using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Management.Filters;
 using Elsa.Workflows.Management.Mappers;
 using Elsa.Workflows.Management.Models;
-using Elsa.Workflows.Serialization.Converters;
 using Humanizer;
 using JetBrains.Annotations;
 
@@ -46,6 +46,7 @@ internal class Export : ElsaEndpoint<Request>
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Api.Endpoints.WorkflowDefinitions.Export.Export.DownloadSingleWorkflowAsync(String, String, CancellationToken)")]
     public override async Task HandleAsync(Request request, CancellationToken cancellationToken)
     {
         if (request.DefinitionId != null)
@@ -54,6 +55,7 @@ internal class Export : ElsaEndpoint<Request>
             await DownloadMultipleWorkflowsAsync(request.Ids, cancellationToken);
     }
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Api.Endpoints.WorkflowDefinitions.Export.Export.SerializeWorkflowDefinition(WorkflowDefinitionModel)")]
     private async Task DownloadMultipleWorkflowsAsync(ICollection<string> ids, CancellationToken cancellationToken)
     {
         var definitions = (await _store.FindManyAsync(new WorkflowDefinitionFilter { Ids = ids }, cancellationToken: cancellationToken)).ToList();
@@ -84,6 +86,7 @@ internal class Export : ElsaEndpoint<Request>
         await SendBytesAsync(zipStream.ToArray(), "workflow-definitions.zip", cancellation: cancellationToken);
     }
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Api.Endpoints.WorkflowDefinitions.Export.Export.SerializeWorkflowDefinition(WorkflowDefinitionModel)")]
     private async Task DownloadSingleWorkflowAsync(string definitionId, string? versionOptions, CancellationToken cancellationToken)
     {
         var parsedVersionOptions = string.IsNullOrEmpty(versionOptions) ? VersionOptions.Latest : VersionOptions.FromString(versionOptions);
@@ -110,13 +113,10 @@ internal class Export : ElsaEndpoint<Request>
         return fileName;
     }
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     private byte[] SerializeWorkflowDefinition(WorkflowDefinitionModel model)
     {
         var serializerOptions = _serializer.CreateOptions();
-
-        // Exclude composite activities from being serialized.
-        serializerOptions.Converters.Add(new JsonIgnoreCompositeRootConverterFactory());
-
         var binaryJson = JsonSerializer.SerializeToUtf8Bytes(model, serializerOptions);
         return binaryJson;
     }

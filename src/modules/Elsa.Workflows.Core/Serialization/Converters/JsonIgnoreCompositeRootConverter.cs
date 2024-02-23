@@ -8,7 +8,7 @@ using Elsa.Workflows.Contracts;
 namespace Elsa.Workflows.Serialization.Converters;
 
 /// <summary>
-/// Ignores properties with the <see cref="JsonIgnoreCompositeRootAttribute"/> attribute.
+/// Ignores properties with the <see cref="JsonIgnoreAttribute"/> attribute.
 /// </summary>
 public class JsonIgnoreCompositeRootConverter : JsonConverter<IActivity>
 {
@@ -30,9 +30,6 @@ public class JsonIgnoreCompositeRootConverter : JsonConverter<IActivity>
         foreach (var property in properties)
         {
             if (property.GetCustomAttribute<JsonIgnoreAttribute>() != null)
-                continue;
-            
-            if (property.GetCustomAttribute<JsonIgnoreCompositeRootAttribute>() != null)
                 continue;
 
             var propName = options.PropertyNamingPolicy?.ConvertName(property.Name) ?? property.Name;

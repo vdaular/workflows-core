@@ -12,6 +12,7 @@ using Elsa.Workflows.Management.Contracts;
 using Elsa.Workflows.Models;
 using Elsa.Workflows.Serialization.Converters;
 using Microsoft.AspNetCore.Http;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Elsa.Workflows.Api.Endpoints.WorkflowDefinitions.Post;
 
@@ -44,6 +45,7 @@ internal class Post : ElsaEndpoint<SaveWorkflowDefinitionRequest, WorkflowDefini
         ConfigurePermissions("write:workflow-definitions");
     }
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     public override async Task HandleAsync(SaveWorkflowDefinitionRequest request, CancellationToken cancellationToken)
     {
         var model = request.Model;
@@ -70,10 +72,6 @@ internal class Post : ElsaEndpoint<SaveWorkflowDefinitionRequest, WorkflowDefini
         // Update the draft with the received model.
         var root = model.Root ?? new Sequence();
         var serializerOptions = _serializer.CreateOptions();
-        
-        // Ignore the root activity when serializing the workflow definition.
-        serializerOptions.Converters.Add(new JsonIgnoreCompositeRootConverterFactory());
-        
         var stringData = JsonSerializer.Serialize(root, serializerOptions);
         var variables = _variableDefinitionMapper.Map(model.Variables).ToList();
         var inputs = model.Inputs ?? new List<InputDefinition>();

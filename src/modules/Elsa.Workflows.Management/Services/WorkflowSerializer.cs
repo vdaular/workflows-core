@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Elsa.Workflows.Activities;
 using Elsa.Workflows.Contracts;
 using Elsa.Workflows.Management.Contracts;
@@ -13,15 +14,15 @@ namespace Elsa.Workflows.Management.Services;
 public class WorkflowSerializer(IApiSerializer apiSerializer, WorkflowDefinitionMapper workflowDefinitionMapper) : IWorkflowSerializer
 {
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the model must be known at compile time.")]
     public string Serialize(Workflow workflow)
     {
         var model = workflowDefinitionMapper.Map(workflow);
-        var serializerOptions = apiSerializer.CreateOptions();
-        serializerOptions.Converters.Add(new JsonIgnoreCompositeRootConverterFactory());
         return apiSerializer.Serialize(model);
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the model must be known at compile time.")]
     public Workflow Deserialize(string serializedWorkflow)
     {
         var model = apiSerializer.Deserialize<WorkflowDefinitionModel>(serializedWorkflow);

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using Elsa.Common.Serialization;
 using Elsa.Workflows.Contracts;
@@ -16,6 +17,7 @@ public class JsonActivitySerializer : ConfigurableSerializer, IActivitySerialize
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the activity must be known at compile time.")]
     public string Serialize(IActivity activity)
     {
         var options = CreateOptions();
@@ -24,6 +26,7 @@ public class JsonActivitySerializer : ConfigurableSerializer, IActivitySerialize
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the activity must be known at compile time.")]
     public string Serialize(object value)
     {
         var options = CreateOptions();
@@ -32,12 +35,15 @@ public class JsonActivitySerializer : ConfigurableSerializer, IActivitySerialize
     }
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the activity must be known at compile time.")]
     public IActivity Deserialize(string serializedActivity) => JsonSerializer.Deserialize<IActivity>(serializedActivity, CreateOptions())!;
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the activity must be known at compile time.")]
     public object Deserialize(string serializedValue, Type type) => JsonSerializer.Deserialize(serializedValue, type, CreateOptions())!;
 
     /// <inheritdoc />
+    [RequiresUnreferencedCode("The type of the activity must be known at compile time.")]
     public T Deserialize<T>(string serializedValue) => JsonSerializer.Deserialize<T>(serializedValue, CreateOptions())!;
 
     /// <inheritdoc />

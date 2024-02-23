@@ -11,7 +11,7 @@ public class JsonIgnoreCompositeRootConverterFactory : JsonConverterFactory
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert) => typeof(IActivity).IsAssignableFrom(typeToConvert);
-
+    
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {

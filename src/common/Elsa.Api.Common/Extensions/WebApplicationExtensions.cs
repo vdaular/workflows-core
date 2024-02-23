@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Elsa.Workflows.Contracts;
@@ -23,6 +24,7 @@ public static class WebApplicationExtensions
     /// <param name="app"></param>
     /// <param name="routePrefix">The route prefix to apply to Elsa API endpoints.</param>
     /// <example>E.g. "elsa/api" will expose endpoints like this: "/elsa/api/workflow-definitions"</example>
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     public static IApplicationBuilder UseWorkflowsApi(this IApplicationBuilder app, string routePrefix = "elsa/api") =>
         app.UseFastEndpoints(config =>
         {
@@ -36,7 +38,8 @@ public static class WebApplicationExtensions
     /// </summary>
     /// <param name="routes">The <see cref="IEndpointRouteBuilder"/> to register the endpoints with.</param>
     /// <param name="routePrefix">The route prefix to apply to Elsa API endpoints.</param>
-    /// /// <example>E.g. "elsa/api" will expose endpoints like this: "/elsa/api/workflow-definitions"</example>
+    /// <example>E.g. "elsa/api" will expose endpoints like this: "/elsa/api/workflow-definitions"</example>
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     public static IEndpointRouteBuilder MapWorkflowsApi(this IEndpointRouteBuilder routes, string routePrefix = "elsa/api") =>
         routes.MapFastEndpoints(config =>
         {
@@ -45,6 +48,7 @@ public static class WebApplicationExtensions
             config.Serializer.ResponseSerializer = SerializeRequestAsync;
         });
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     private static ValueTask<object?> DeserializeRequestAsync(HttpRequest httpRequest, Type modelType, JsonSerializerContext? serializerContext, CancellationToken cancellationToken)
     {
         var serializer = httpRequest.HttpContext.RequestServices.GetRequiredService<IApiSerializer>();
@@ -55,6 +59,7 @@ public static class WebApplicationExtensions
             : JsonSerializer.DeserializeAsync(httpRequest.Body, modelType, serializerContext, cancellationToken);
     }
 
+    [RequiresUnreferencedCode("Calls Elsa.Workflows.Contracts.IApiSerializer.CreateOptions()")]
     private static Task SerializeRequestAsync(HttpResponse httpResponse, object? dto, string contentType, JsonSerializerContext? serializerContext, CancellationToken cancellationToken)
     {
         var serializer = httpResponse.HttpContext.RequestServices.GetRequiredService<IApiSerializer>();
