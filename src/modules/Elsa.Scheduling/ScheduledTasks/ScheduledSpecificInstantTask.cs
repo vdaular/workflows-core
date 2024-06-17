@@ -1,3 +1,4 @@
+using System.Timers;
 using Elsa.Common.Contracts;
 using Elsa.Mediator.Contracts;
 using Elsa.Scheduling.Commands;
@@ -38,25 +39,34 @@ public class ScheduledSpecificInstantTask : IScheduledTask
 
     private void Schedule()
     {
+        if (_timer != null)
+        {
+            _timer.Elapsed -= OnElapsed;
+            _timer.Dispose();
+        }
+
         var now = _systemClock.UtcNow;
         var delay = _startAt - now;
 
         if (delay.Milliseconds <= 0)
             delay = TimeSpan.FromMilliseconds(1);
 
-        _timer = new Timer(delay.TotalMilliseconds) { Enabled = true };
-
-        _timer.Elapsed += async (_, _) =>
+        _timer = new Timer(delay.TotalMilliseconds)
         {
-            _timer?.Dispose();
-            _timer = null;
-
-            using var scope = _scopeFactory.CreateScope();
-            var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
-
-            var cancellationToken = _cancellationTokenSource.Token;
-            if (!cancellationToken.IsCancellationRequested)
-                await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
+            Enabled = true,
+            AutoReset = false
         };
+
+        _timer.Elapsed += OnElapsed;
+    }
+
+    private async void OnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
+
+        var cancellationToken = _cancellationTokenSource.Token;
+        if (!cancellationToken.IsCancellationRequested)
+            await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
     }
 }

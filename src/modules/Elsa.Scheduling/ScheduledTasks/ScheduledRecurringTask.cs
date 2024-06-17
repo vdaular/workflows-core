@@ -1,3 +1,4 @@
+using System.Timers;
 using Elsa.Common.Contracts;
 using Elsa.Mediator.Contracts;
 using Elsa.Scheduling.Commands;
@@ -70,22 +71,31 @@ public class ScheduledRecurringTask : IScheduledTask
 
     private void SetupTimer(TimeSpan delay)
     {
-        if (delay < TimeSpan.Zero) delay = TimeSpan.FromSeconds(1);
-
-        _timer = new Timer(delay.TotalMilliseconds) { Enabled = true };
-
-        _timer.Elapsed += async (_, _) =>
+        if (_timer != null)
         {
+            _timer.Elapsed -= OnElapsed;
             _timer.Dispose();
-            _timer = null;
-            _startAt = _systemClock.UtcNow + _interval;
+        }
+        
+        if (delay < TimeSpan.Zero) 
+            delay = TimeSpan.FromSeconds(1);
 
-            using var scope = _scopeFactory.CreateScope();
-            var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
-
-            var cancellationToken = _cancellationTokenSource.Token;
-            if (!cancellationToken.IsCancellationRequested) await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
-            if (!cancellationToken.IsCancellationRequested) Schedule();
+        _timer = new Timer(delay.TotalMilliseconds)
+        {
+            Enabled = true,
+            AutoReset = false
         };
+
+        _timer.Elapsed += OnElapsed;
+    }
+
+    private async void OnElapsed(object? sender, ElapsedEventArgs e)
+    {
+        _startAt = _systemClock.UtcNow + _interval;
+        using var scope = _scopeFactory.CreateScope();
+        var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
+        var cancellationToken = _cancellationTokenSource.Token;
+        if (!cancellationToken.IsCancellationRequested) await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
+        if (!cancellationToken.IsCancellationRequested) Schedule();
     }
 }

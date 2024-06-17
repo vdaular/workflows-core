@@ -1,3 +1,4 @@
+using System.Timers;
 using Elsa.Common.Contracts;
 using Elsa.Mediator.Contracts;
 using Elsa.Scheduling.Commands;
@@ -83,19 +84,27 @@ public class ScheduledCronTask : IScheduledTask
 
     private void SetupTimer(TimeSpan delay)
     {
-        _timer = new Timer(delay.TotalMilliseconds) { Enabled = true };
-
-        _timer.Elapsed += async (_, _) =>
+        if (_timer != null)
         {
+            _timer.Elapsed -= OnElapsed;
             _timer.Dispose();
-            _timer = null;
-
-            using var scope = _scopeFactory.CreateScope();
-            var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
-
-            var cancellationToken = _cancellationTokenSource.Token;
-            if (!cancellationToken.IsCancellationRequested) await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
-            if (!cancellationToken.IsCancellationRequested) Schedule();
+        }
+        
+        _timer = new Timer(delay.TotalMilliseconds)
+        {
+            Enabled = true,
+            AutoReset = false
         };
+
+        _timer.Elapsed += OnElapsed;
+    }
+
+    private async void OnElapsed(object? sender, ElapsedEventArgs args)
+    {
+        using var scope = _scopeFactory.CreateScope();
+        var commandSender = scope.ServiceProvider.GetRequiredService<ICommandSender>();
+        var cancellationToken = _cancellationTokenSource.Token;
+        if (!cancellationToken.IsCancellationRequested) await commandSender.SendAsync(new RunScheduledTask(_task), cancellationToken);
+        if (!cancellationToken.IsCancellationRequested) Schedule();
     }
 }
