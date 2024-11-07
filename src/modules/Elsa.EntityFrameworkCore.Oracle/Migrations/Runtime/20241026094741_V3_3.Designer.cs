@@ -20,7 +20,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Elsa")
+                .HasDefaultSchema("ADMIN")
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -42,7 +42,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
 
                     b.HasIndex(new[] { "TenantId" }, "IX_SerializedKeyValuePair_TenantId");
 
-                    b.ToTable("KeyValuePairs", "Elsa");
+                    b.ToTable("KeyValuePairs", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Runtime.Entities.ActivityExecutionRecord", b =>
@@ -144,7 +144,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     b.HasIndex("ActivityType", "ActivityTypeVersion")
                         .HasDatabaseName("IX_ActivityExecutionRecord_ActivityType_ActivityTypeVersion");
 
-                    b.ToTable("ActivityExecutionRecords", "Elsa");
+                    b.ToTable("ActivityExecutionRecords", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Runtime.Entities.BookmarkQueueItem", b =>
@@ -197,7 +197,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
 
                     b.HasIndex(new[] { "WorkflowInstanceId" }, "IX_BookmarkQueueItem_WorkflowInstanceId");
 
-                    b.ToTable("BookmarkQueueItems", "Elsa");
+                    b.ToTable("BookmarkQueueItems", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Runtime.Entities.StoredBookmark", b =>
@@ -253,7 +253,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
 
                     b.HasIndex(new[] { "WorkflowInstanceId" }, "IX_StoredBookmark_WorkflowInstanceId");
 
-                    b.ToTable("Bookmarks", "Elsa");
+                    b.ToTable("Bookmarks", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Runtime.Entities.StoredTrigger", b =>
@@ -303,7 +303,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     b.HasIndex("WorkflowDefinitionVersionId")
                         .HasDatabaseName("IX_StoredTrigger_WorkflowDefinitionVersionId");
 
-                    b.ToTable("Triggers", "Elsa");
+                    b.ToTable("Triggers", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Runtime.Entities.WorkflowExecutionLogRecord", b =>
@@ -428,7 +428,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     b.HasIndex("Timestamp", "Sequence")
                         .HasDatabaseName("IX_WorkflowExecutionLogRecord_Timestamp_Sequence");
 
-                    b.ToTable("WorkflowExecutionLogRecords", "Elsa");
+                    b.ToTable("WorkflowExecutionLogRecords", "ADMIN");
                 });
 #pragma warning restore 612, 618
         }

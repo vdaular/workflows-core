@@ -20,7 +20,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Elsa")
+                .HasDefaultSchema("ADMIN")
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -81,7 +81,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
                     b.HasIndex("WorkflowInstanceId")
                         .HasDatabaseName("IX_AlterationJob_WorkflowInstanceId");
 
-                    b.ToTable("AlterationJobs", "Elsa");
+                    b.ToTable("AlterationJobs", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Alterations.Core.Entities.AlterationPlan", b =>
@@ -128,7 +128,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_AlterationPlan_TenantId");
 
-                    b.ToTable("AlterationPlans", "Elsa");
+                    b.ToTable("AlterationPlans", "ADMIN");
                 });
 #pragma warning restore 612, 618
         }

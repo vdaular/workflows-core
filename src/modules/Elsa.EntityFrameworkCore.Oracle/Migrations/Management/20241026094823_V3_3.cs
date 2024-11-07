@@ -20,7 +20,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Elsa");
+                name: "ADMIN");
 
             migrationBuilder.CreateTable(
                 name: "WorkflowDefinitions",
@@ -35,11 +35,11 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                     ProviderName = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     MaterializerName = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     MaterializerContext = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    StringData = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    StringData = table.Column<string>(type: "NCLOB", nullable: true),
                     BinaryData = table.Column<byte[]>(type: "RAW(2000)", nullable: true),
                     IsReadonly = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     IsSystem = table.Column<bool>(type: "NUMBER(1)", nullable: false),
-                    Data = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Data = table.Column<string>(type: "NCLOB", nullable: true),
                     UsableAsActivity = table.Column<bool>(type: "NUMBER(1)", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
@@ -71,7 +71,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
                     FinishedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
-                    Data = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    Data = table.Column<string>(type: "NCLOB", nullable: true),
                     DataCompressionAlgorithm = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },

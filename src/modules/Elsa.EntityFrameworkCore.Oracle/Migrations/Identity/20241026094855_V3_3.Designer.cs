@@ -19,7 +19,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Identity
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Elsa")
+                .HasDefaultSchema("ADMIN")
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -75,7 +75,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Identity
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_Application_TenantId");
 
-                    b.ToTable("Applications", "Elsa");
+                    b.ToTable("Applications", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Identity.Entities.Role", b =>
@@ -104,7 +104,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Identity
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_Role_TenantId");
 
-                    b.ToTable("Roles", "Elsa");
+                    b.ToTable("Roles", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Identity.Entities.User", b =>
@@ -141,7 +141,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Identity
                     b.HasIndex("TenantId")
                         .HasDatabaseName("IX_User_TenantId");
 
-                    b.ToTable("Users", "Elsa");
+                    b.ToTable("Users", "ADMIN");
                 });
 #pragma warning restore 612, 618
         }

@@ -19,7 +19,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Identity
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Elsa");
+                name: "ADMIN");
 
             migrationBuilder.CreateTable(
                 name: "Applications",

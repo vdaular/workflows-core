@@ -20,7 +20,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Elsa");
+                name: "ADMIN");
 
             migrationBuilder.CreateTable(
                 name: "AlterationJobs",
@@ -34,7 +34,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
                     StartedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
                     CompletedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
-                    SerializedLog = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedLog = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -52,8 +52,8 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Alterations
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
                     StartedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
                     CompletedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
-                    SerializedAlterations = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedWorkflowInstanceFilter = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedAlterations = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedWorkflowInstanceFilter = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>

@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Oracle.EntityFrameworkCore.Infrastructure;
 
 // ReSharper disable once CheckNamespace
@@ -21,6 +22,12 @@ public static class DbContextOptionsBuilderExtensions
                 db
                     .MigrationsAssembly(options.GetMigrationsAssemblyName(migrationsAssembly))
                     .MigrationsHistoryTable(options.GetMigrationsHistoryTableName(), options.GetSchemaName());
+
+                #if NET6_0
+                    db.UseOracleSQLCompatibility("11");
+                #elif NET8_0
+                    db.UseOracleSQLCompatibility(OracleSQLCompatibility.DatabaseVersion19);
+                #endif
 
                 configure?.Invoke(db);
             });

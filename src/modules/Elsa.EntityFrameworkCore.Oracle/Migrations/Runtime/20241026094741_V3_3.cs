@@ -20,7 +20,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Elsa");
+                name: "ADMIN");
 
             migrationBuilder.CreateTable(
                 name: "ActivityExecutionRecords",
@@ -38,12 +38,12 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     HasBookmarks = table.Column<bool>(type: "NUMBER(1)", nullable: false),
                     Status = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
                     CompletedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: true),
-                    SerializedActivityState = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedActivityStateCompressionAlgorithm = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedException = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedOutputs = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedPayload = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedProperties = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedActivityState = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedActivityStateCompressionAlgorithm = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedException = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedOutputs = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedPayload = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedProperties = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -64,7 +64,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     ActivityInstanceId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
                     ActivityTypeName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
-                    SerializedOptions = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedOptions = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -84,8 +84,8 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     ActivityInstanceId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
                     CorrelationId = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     CreatedAt = table.Column<DateTimeOffset>(type: "TIMESTAMP(7) WITH TIME ZONE", nullable: false),
-                    SerializedMetadata = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedPayload = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedMetadata = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedPayload = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -99,7 +99,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
-                    SerializedValue = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
+                    SerializedValue = table.Column<string>(type: "NCLOB", nullable: false),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -118,7 +118,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     Name = table.Column<string>(type: "NVARCHAR2(450)", nullable: false),
                     ActivityId = table.Column<string>(type: "NVARCHAR2(2000)", nullable: false),
                     Hash = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
-                    SerializedPayload = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedPayload = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>
@@ -148,8 +148,8 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Runtime
                     EventName = table.Column<string>(type: "NVARCHAR2(450)", nullable: true),
                     Message = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
                     Source = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedActivityState = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
-                    SerializedPayload = table.Column<string>(type: "NVARCHAR2(2000)", nullable: true),
+                    SerializedActivityState = table.Column<string>(type: "NCLOB", nullable: true),
+                    SerializedPayload = table.Column<string>(type: "NCLOB", nullable: true),
                     TenantId = table.Column<string>(type: "NVARCHAR2(450)", nullable: true)
                 },
                 constraints: table =>

@@ -19,7 +19,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Labels
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
-                name: "Elsa");
+                name: "ADMIN");
 
             migrationBuilder.CreateTable(
                 name: "Labels",

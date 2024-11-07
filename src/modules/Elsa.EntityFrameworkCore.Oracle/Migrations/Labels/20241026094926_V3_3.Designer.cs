@@ -19,7 +19,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Labels
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Elsa")
+                .HasDefaultSchema("ADMIN")
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -49,7 +49,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Labels
 
                     b.HasKey("Id");
 
-                    b.ToTable("Labels", "Elsa");
+                    b.ToTable("Labels", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Labels.Entities.WorkflowDefinitionLabel", b =>
@@ -86,7 +86,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Labels
                     b.HasIndex("WorkflowDefinitionVersionId")
                         .HasDatabaseName("WorkflowDefinitionLabel_WorkflowDefinitionVersionId");
 
-                    b.ToTable("WorkflowDefinitionLabels", "Elsa");
+                    b.ToTable("WorkflowDefinitionLabels", "ADMIN");
                 });
 #pragma warning restore 612, 618
         }

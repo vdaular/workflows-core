@@ -17,7 +17,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasDefaultSchema("Elsa")
+                .HasDefaultSchema("ADMIN")
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -35,7 +35,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                         .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<string>("Data")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("DefinitionId")
                         .IsRequired()
@@ -70,7 +70,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                         .HasColumnType("NVARCHAR2(2000)");
 
                     b.Property<string>("StringData")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("TenantId")
                         .HasColumnType("NVARCHAR2(450)");
@@ -111,7 +111,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                         .IsUnique()
                         .HasDatabaseName("IX_WorkflowDefinition_DefinitionId_Version");
 
-                    b.ToTable("WorkflowDefinitions", "Elsa");
+                    b.ToTable("WorkflowDefinitions", "ADMIN");
                 });
 
             modelBuilder.Entity("Elsa.Workflows.Management.Entities.WorkflowInstance", b =>
@@ -126,7 +126,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                         .HasColumnType("TIMESTAMP(7) WITH TIME ZONE");
 
                     b.Property<string>("Data")
-                        .HasColumnType("NVARCHAR2(2000)");
+                        .HasColumnType("NCLOB");
 
                     b.Property<string>("DataCompressionAlgorithm")
                         .HasColumnType("NVARCHAR2(2000)");
@@ -215,7 +215,7 @@ namespace Elsa.EntityFrameworkCore.Oracle.Migrations.Management
                     b.HasIndex("Status", "SubStatus", "DefinitionId", "Version")
                         .HasDatabaseName("IX_WorkflowInstance_Status_SubStatus_DefinitionId_Version");
 
-                    b.ToTable("WorkflowInstances", "Elsa");
+                    b.ToTable("WorkflowInstances", "ADMIN");
                 });
 #pragma warning restore 612, 618
         }
