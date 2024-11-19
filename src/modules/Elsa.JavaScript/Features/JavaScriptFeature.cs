@@ -13,7 +13,6 @@ using Elsa.JavaScript.Options;
 using Elsa.JavaScript.Providers;
 using Elsa.JavaScript.Services;
 using Elsa.JavaScript.TypeDefinitions.Contracts;
-using Elsa.JavaScript.TypeDefinitions.Providers;
 using Elsa.JavaScript.TypeDefinitions.Services;
 using Elsa.Workflows;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ public class JavaScriptFeature : FeatureBase
     /// Configures the Jint options.
     /// </summary>
     private Action<JintOptions> JintOptions { get; set; } = _ => { };
-    
+
     public JavaScriptFeature ConfigureJintOptions(Action<JintOptions> configure)
     {
         JintOptions += configure;
@@ -89,8 +88,10 @@ public class JavaScriptFeature : FeatureBase
         // Activities.
         Module.UseWorkflowManagement(management => management.AddActivity<RunJavaScript>());
 
-        Services
-            .AddScoped<IPropertyUIHandler, RunJavaScriptOptionsProvider>()
-            .AddFunctionDefinitionProvider<InputFunctionsDefinitionProvider>();
+        // Type Script definitions.
+        Services.AddFunctionDefinitionProvider<InputFunctionsDefinitionProvider>();
+
+        // UI property handlers.
+        Services.AddScoped<IPropertyUIHandler, RunJavaScriptOptionsProvider>();
     }
 }
