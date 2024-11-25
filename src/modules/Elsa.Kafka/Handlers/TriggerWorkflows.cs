@@ -1,15 +1,20 @@
 using System.Text;
 using Elsa.Expressions.Contracts;
 using Elsa.Expressions.Models;
+using Elsa.Extensions;
 using Elsa.Kafka.Activities;
 using Elsa.Kafka.Notifications;
 using Elsa.Kafka.Stimuli;
 using Elsa.Mediator.Contracts;
+using Elsa.Workflows;
 using Elsa.Workflows.Helpers;
+using Elsa.Workflows.Management;
+using Elsa.Workflows.Management.Entities;
 using Elsa.Workflows.Memory;
 using Elsa.Workflows.Runtime;
 using Elsa.Workflows.Runtime.Options;
 using JetBrains.Annotations;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Elsa.Kafka.Handlers;
@@ -19,9 +24,13 @@ public class TriggerWorkflows(
     ITriggerInvoker triggerInvoker,
     IBookmarkQueue bookmarkQueue,
     ICorrelationStrategy correlationStrategy,
+    IWorkflowInstanceStore workflowInstanceStore,
+    IWorkflowDefinitionService workflowDefinitionService,
+    IVariablePersistenceManager variablePersistenceManager,
     IExpressionEvaluator expressionEvaluator,
     IOptions<KafkaOptions> options,
-    IServiceProvider serviceProvider) : INotificationHandler<TransportMessageReceived>
+    IServiceProvider serviceProvider,
+    ILogger<TriggerWorkflows> logger) : INotificationHandler<TransportMessageReceived>
 {
     private static readonly string MessageReceivedActivityTypeName = ActivityTypeNameHelper.GenerateTypeName<MessageReceived>();
 
@@ -100,7 +109,7 @@ public class TriggerWorkflows(
         CancellationToken cancellationToken)
     {
         var matchingTriggers = new List<TriggerBinding>();
-        var topic = GetTopic(transportMessage);
+        var topic = transportMessage.Topic;
 
         if (string.IsNullOrEmpty(topic))
             return matchingTriggers;
@@ -114,7 +123,7 @@ public class TriggerWorkflows(
             if (stimulus.Topics.All(x => x != topic))
                 continue;
 
-            var isMatch = await EvaluatePredicateAsync(transportMessage, stimulus, cancellationToken);
+            var isMatch = await EvaluatePredicateAsync(transportMessage, stimulus, null, cancellationToken);
 
             if (isMatch)
                 matchingTriggers.Add(binding);
@@ -130,14 +139,14 @@ public class TriggerWorkflows(
         CancellationToken cancellationToken)
     {
         var matchingBookmarks = new List<BookmarkBinding>();
-        var topic = GetTopic(transportMessage);
+        var topic = transportMessage.Topic;
 
         if (string.IsNullOrEmpty(topic))
             return matchingBookmarks;
 
         var correlationId = GetCorrelationId(transportMessage);
         var workflowInstanceId = GetWorkflowInstanceId(transportMessage);
-        
+
         foreach (var binding in boundBookmarks)
         {
             var stimulus = binding.Stimulus;
@@ -158,8 +167,8 @@ public class TriggerWorkflows(
                         continue;
                 }
             }
-
-            var isMatch = await EvaluatePredicateAsync(transportMessage, stimulus, cancellationToken);
+            
+            var isMatch = await EvaluatePredicateAsync(transportMessage, stimulus, binding, cancellationToken);
 
             if (isMatch)
                 matchingBookmarks.Add(binding);
@@ -168,27 +177,61 @@ public class TriggerWorkflows(
         return matchingBookmarks;
     }
 
-    private async Task<bool> EvaluatePredicateAsync(KafkaTransportMessage transportMessage, MessageReceivedStimulus stimulus, CancellationToken cancellationToken)
+    private async Task<bool> EvaluatePredicateAsync(KafkaTransportMessage transportMessage, MessageReceivedStimulus stimulus, BookmarkBinding? binding, CancellationToken cancellationToken)
     {
         var predicate = stimulus.Predicate;
 
         if (predicate == null)
             return true;
 
-        var memory = new MemoryRegister();
-        var messageVariable = new Variable("message", transportMessage);
-        var messageType = stimulus.MessageType;
-        var message = DeserializeMessage(transportMessage.Value, messageType);
-        var expressionExecutionContext = new ExpressionExecutionContext(serviceProvider, memory, cancellationToken: cancellationToken);
-        messageVariable.Set(expressionExecutionContext, message);
-        return await expressionEvaluator.EvaluateAsync<bool>(predicate, expressionExecutionContext);
-    }
+        var expressionExecutionContext = await GetExpressionExecutionContextAsync(transportMessage, binding, cancellationToken);
 
-    private object DeserializeMessage(string value, Type? type)
-    {
-        return type == null ? value : options.Value.Deserializer(serviceProvider, value, type);
+        try
+        {
+            return await expressionEvaluator.EvaluateAsync<bool>(predicate, expressionExecutionContext);
+        }
+        catch (Exception e)
+        {
+            logger.LogWarning(e, "An error occurred while evaluating the predicate for stimulus {Stimulus}", stimulus);
+            return false;
+        }
     }
     
+    private async Task<ExpressionExecutionContext> GetExpressionExecutionContextAsync(KafkaTransportMessage transportMessage, BookmarkBinding? binding, CancellationToken cancellationToken)
+    {
+        var memory = new MemoryRegister();
+        var expressionExecutionContext = new ExpressionExecutionContext(serviceProvider, memory, cancellationToken: cancellationToken);
+        var transportMessageVariable = new Variable("transportMessage", transportMessage);
+        var messageVariable = new Variable("message", transportMessage.Value);
+        
+        transportMessageVariable.Set(expressionExecutionContext, transportMessage);
+        messageVariable.Set(expressionExecutionContext, transportMessage.Value);
+        
+        if(binding == null)
+        {
+            return new ExpressionExecutionContext(serviceProvider, memory, cancellationToken: cancellationToken);
+        }
+        
+        var boundWorkflowInstanceId = binding.WorkflowInstanceId;
+        var boundWorkflowInstance = await workflowInstanceStore.FindAsync(boundWorkflowInstanceId, cancellationToken);
+            
+        if (boundWorkflowInstance == null)
+        {
+            logger.LogWarning("Could not find workflow instance with ID {WorkflowInstanceId}", boundWorkflowInstanceId);
+            throw new InvalidOperationException($"Could not find workflow instance with ID {boundWorkflowInstanceId}");
+        }
+        
+        var workflowExecutionContext = await CreateWorkflowExecutionContextAsync(boundWorkflowInstance, cancellationToken);
+        var bookmark = workflowExecutionContext.Bookmarks.FirstOrDefault(x => x.Id == binding.BookmarkId) ?? throw new InvalidOperationException($"Could not find bookmark with ID {binding.BookmarkId}");
+        var activityInstanceId = bookmark.ActivityInstanceId!;
+        var activityExecutionContext = workflowExecutionContext.ActivityExecutionContexts.FirstOrDefault(x => x.Id == activityInstanceId) ?? throw new InvalidOperationException($"Could not find activity execution context with ID {activityInstanceId}");
+        var parentExecutionContext = activityExecutionContext.ExpressionExecutionContext;
+        expressionExecutionContext.ParentContext = parentExecutionContext;
+        await variablePersistenceManager.LoadVariablesAsync(workflowExecutionContext);
+        
+        return expressionExecutionContext;
+    }
+
     private string? GetWorkflowInstanceId(KafkaTransportMessage transportMessage)
     {
         var key = options.Value.WorkflowInstanceIdHeaderKey;
@@ -199,10 +242,15 @@ public class TriggerWorkflows(
     {
         return correlationStrategy.GetCorrelationId(transportMessage);
     }
-
-    private string? GetTopic(KafkaTransportMessage transportMessage)
+    
+    private async Task<WorkflowExecutionContext> CreateWorkflowExecutionContextAsync(WorkflowInstance workflowInstance, CancellationToken cancellationToken)
     {
-        var key = options.Value.TopicHeaderKey;
-        return transportMessage.Headers.TryGetValue(key, out var value) ? Encoding.UTF8.GetString(value) : null;
+        var workflowDefinition = await workflowDefinitionService.FindWorkflowGraphAsync(workflowInstance.DefinitionVersionId, cancellationToken);
+
+        if (workflowDefinition == null)
+            throw new InvalidOperationException($"Could not find workflow definition with ID {workflowInstance.DefinitionVersionId}");
+
+        var workflowState = workflowInstance.WorkflowState;
+        return await WorkflowExecutionContext.CreateAsync(serviceProvider, workflowDefinition, workflowState, cancellationToken: cancellationToken);
     }
 }
