@@ -38,6 +38,7 @@ using Elsa.Workflows.LogPersistence;
 using Elsa.Workflows.Management.Compression;
 using Elsa.Workflows.Management.Stores;
 using Elsa.Workflows.Runtime.Distributed.Extensions;
+using Elsa.Workflows.Runtime.Options;
 using Elsa.Workflows.Runtime.Stores;
 using Elsa.Workflows.Runtime.Tasks;
 using JetBrains.Annotations;
@@ -67,12 +68,12 @@ const bool useAzureServiceBus = false;
 const bool useKafka = false;
 const bool useReadOnlyMode = false;
 const bool useSignalR = false; // Disabled until Elsa Studio sends authenticated requests.
-const WorkflowRuntime workflowRuntime = WorkflowRuntime.ProtoActor;
-const DistributedCachingTransport distributedCachingTransport = DistributedCachingTransport.ProtoActor;
+const WorkflowRuntime workflowRuntime = WorkflowRuntime.Distributed;
+const DistributedCachingTransport distributedCachingTransport = DistributedCachingTransport.MassTransit;
 const MassTransitBroker massTransitBroker = MassTransitBroker.Memory;
 const bool useMultitenancy = false;
 const bool useAgents = false;
-const bool useSecrets = true;
+const bool useSecrets = false;
 const bool disableVariableWrappers = false;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -527,8 +528,10 @@ services.Configure<RecurringTaskOptions>(options =>
 {
     options.Schedule.ConfigureTask<TriggerBookmarkQueueRecurringTask>(TimeSpan.FromSeconds(30));
     options.Schedule.ConfigureTask<UpdateExpiredSecretsRecurringTask>(TimeSpan.FromHours(4));
-    options.Schedule.ConfigureTask<PurgeBookmarkQueueRecurringTask>(TimeSpan.FromSeconds(60));
+    options.Schedule.ConfigureTask<PurgeBookmarkQueueRecurringTask>(TimeSpan.FromSeconds(11));
 });
+
+services.Configure<BookmarkQueuePurgeOptions>(options => options.Ttl = TimeSpan.FromSeconds(10));
 
 //services.Configure<CachingOptions>(options => options.CacheDuration = TimeSpan.FromDays(1));
 services.AddHealthChecks();

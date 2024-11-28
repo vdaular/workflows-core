@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using JetBrains.Annotations;
 using Oracle.EntityFrameworkCore.Infrastructure;
 
 // ReSharper disable once CheckNamespace
@@ -7,6 +8,7 @@ namespace Elsa.EntityFrameworkCore.Extensions;
 /// <summary>
 /// Provides extensions to configure EF Core to use Oracle.
 /// </summary>
+[PublicAPI]
 public static class OracleProvidersExtensions
 {
     private static Assembly Assembly => typeof(OracleProvidersExtensions).Assembly;
