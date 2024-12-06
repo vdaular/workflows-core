@@ -24,11 +24,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.WebHost.UseStaticWebAssets();
 var services = builder.Services;
 var configuration = builder.Configuration;
-var featuresSection = configuration.GetSection("Features");
-var databaseProvider = featuresSection.GetValue<string>("DatabaseProvider");
 var sqliteConnectionString = configuration.GetConnectionString("Sqlite")!;
 var mySqlConnectionString = configuration.GetConnectionString("MySql")!;
 var sqlServerConnectionString = configuration.GetConnectionString("SqlServer")!;
+var postgreSqlConnectionString = configuration.GetConnectionString("PostgreSql")!;
 var rabbitMqConnectionString = configuration.GetConnectionString("RabbitMq")!;
 var azureServiceBusConnectionString = configuration.GetConnectionString("AzureServiceBus")!;
 var identitySection = configuration.GetSection("Identity");
@@ -36,6 +35,7 @@ var identityTokenSection = identitySection.GetSection("Tokens");
 var massTransitSection = configuration.GetSection("MassTransit");
 var massTransitDispatcherSection = configuration.GetSection("MassTransit.Dispatcher");
 var heartbeatSection = configuration.GetSection("Heartbeat");
+var sqlDatabaseProvider = Enum.Parse<SqlDatabaseProvider>(configuration["DatabaseProvider"] ?? "Sqlite");
 
 services.Configure<MassTransitOptions>(massTransitSection);
 services.Configure<MassTransitWorkflowDispatcherOptions>(massTransitDispatcherSection);
@@ -65,20 +65,24 @@ services
                 if (useCaching)
                     management.UseCache();
 
-                if (databaseProvider == "MySql")
+                if (sqlDatabaseProvider == SqlDatabaseProvider.MySql)
                     management.UseEntityFrameworkCore(ef => ef.UseMySql(mySqlConnectionString));
-                else if (databaseProvider == "SqlServer")
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.SqlServer)
                     management.UseEntityFrameworkCore(ef => ef.UseSqlServer(sqlServerConnectionString));
-                else if (databaseProvider == "Sqlite")
+                else if(sqlDatabaseProvider == SqlDatabaseProvider.PostgreSql)
+                    management.UseEntityFrameworkCore(ef => ef.UsePostgreSql(postgreSqlConnectionString));
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.Sqlite)
                     management.UseEntityFrameworkCore(ef => ef.UseSqlite(sqliteConnectionString));
             })
             .UseWorkflowRuntime(runtime =>
             {
-                if (databaseProvider == "MySql")
+                if (sqlDatabaseProvider == SqlDatabaseProvider.MySql)
                     runtime.UseEntityFrameworkCore(ef => ef.UseMySql(mySqlConnectionString));
-                else if (databaseProvider == "SqlServer")
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.SqlServer)
                     runtime.UseEntityFrameworkCore(ef => ef.UseSqlServer(sqlServerConnectionString));
-                else if (databaseProvider == "Sqlite")
+                else if(sqlDatabaseProvider == SqlDatabaseProvider.PostgreSql)
+                    runtime.UseEntityFrameworkCore(ef => ef.UsePostgreSql(postgreSqlConnectionString));
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.Sqlite)
                     runtime.UseEntityFrameworkCore(ef => ef.UseSqlite(sqliteConnectionString));
 
                 if (useMassTransit)
@@ -108,7 +112,15 @@ services
             })
             .UseLiquid()
             .UseCSharp()
-            .UsePython()
+            .UsePython(python =>
+            {
+                python.PythonOptions += options =>
+                {
+                    // Make sure to configure the path to the python DLL. E.g. /opt/homebrew/Cellar/python@3.11/3.11.6_1/Frameworks/Python.framework/Versions/3.11/bin/python3.11
+                    // alternatively, you can set the PYTHONNET_PYDLL environment variable.
+                    configuration.GetSection("Scripting:Python").Bind(options);
+                };
+            })
             .UseHttp(http =>
             {
                 if (useCaching)
@@ -122,11 +134,13 @@ services
             .UseAgentsApi()
             .UseAgentPersistence(persistence => persistence.UseEntityFrameworkCore(ef =>
             {
-                if (databaseProvider == "MySql")
+                if (sqlDatabaseProvider == SqlDatabaseProvider.MySql)
                     ef.UseMySql(mySqlConnectionString);
-                else if (databaseProvider == "SqlServer")
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.SqlServer)
                     ef.UseSqlServer(sqlServerConnectionString);
-                else if (databaseProvider == "Sqlite")
+                else if(sqlDatabaseProvider == SqlDatabaseProvider.PostgreSql)
+                    ef.UsePostgreSql(postgreSqlConnectionString);
+                else if (sqlDatabaseProvider == SqlDatabaseProvider.Sqlite)
                     ef.UseSqlite(sqliteConnectionString);
             }))
             .UseAgentActivities()
