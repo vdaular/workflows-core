@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Security.Cryptography;
 using System.Text;
 using Elsa.CSharp.Contracts;
