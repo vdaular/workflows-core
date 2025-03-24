@@ -26,6 +26,8 @@ public class AddAssembliesAndReferencesFromOptions : INotificationHandler<Evalua
     /// <inheritdoc />
     public Task HandleAsync(EvaluatingCSharp notification, CancellationToken cancellationToken)
     {
+        _options.Assemblies.RemoveWhere(x => x is null);
+        _options.Namespaces.RemoveWhere(x => x is null);
         notification.ConfigureScriptOptions(scriptOptions => scriptOptions
             .AddReferences(_options.Assemblies)
             .AddImports(_options.Namespaces));
