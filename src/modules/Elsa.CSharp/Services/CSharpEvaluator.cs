@@ -62,6 +62,12 @@ public class CSharpEvaluator(INotificationSender notificationSender, IOptions<CS
             if (_csharpOptions.ScriptCacheTimeout.HasValue)
                 entry.SetSlidingExpiration(_csharpOptions.ScriptCacheTimeout.Value);
 
+            var scriptOptions = ScriptOptions.Default
+                .WithReferences(typeof(System.Net.Http.HttpClient).Assembly)
+                .WithImports("System.Net.Http");
+
+            var script = CSharpScript.Create("", scriptOptions, typeof(Globals));
+
             return script.CreateDelegate();
         })!;
     }
