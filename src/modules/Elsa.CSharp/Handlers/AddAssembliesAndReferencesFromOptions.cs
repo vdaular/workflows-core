@@ -1,5 +1,6 @@
 using Elsa.CSharp.Notifications;
 using Elsa.CSharp.Options;
+using Elsa.Extensions;
 using Elsa.Mediator.Contracts;
 using JetBrains.Annotations;
 using Microsoft.CodeAnalysis.Scripting;
