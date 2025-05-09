@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
     
     <PropertyGroup>
-        <ProjectGuid>{ca65b7d5-57e8-4932-b8b8-732d040c9b3a}</ProjectGuid>
+        <ProjectGuid>{E9652738-2B3D-4357-B84B-54F0EA161382}</ProjectGuid>
     </PropertyGroup>
     
     <ItemGroup>
