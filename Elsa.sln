@@ -356,18 +356,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elsa.Tenants.AspNetCore", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Kafka", "src\modules\Elsa.Kafka\Elsa.Kafka.csproj", "{BF934627-F531-44FB-BEC2-ECA801FF31E7}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sql", "sql", "{A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Sql", "src\modules\Elsa.Sql\Elsa.Sql.csproj", "{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Sql.MySql", "src\modules\Elsa.Sql.MySql\Elsa.Sql.MySql.csproj", "{3BED411B-79B5-4CCC-BD46-9549A427B908}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Sql.PostgreSql", "src\modules\Elsa.Sql.PostgreSql\Elsa.Sql.PostgreSql.csproj", "{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Sql.Sqlite", "src\modules\Elsa.Sql.Sqlite\Elsa.Sql.Sqlite.csproj", "{FA5E857F-B173-4B5D-8049-B817A210DEF5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elsa.Sql.SqlServer", "src\modules\Elsa.Sql.SqlServer\Elsa.Sql.SqlServer.csproj", "{A51F9683-DA9F-45E7-82DE-1E261ACD6D68}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "oracle-setup", "oracle-setup", "{66E2E2CF-967F-4564-89E8-F46FA973C99B}"
 	ProjectSection(SolutionItems) = preProject
 		docker\oracle-setup\setup.sql = docker\oracle-setup\setup.sql
@@ -391,9 +379,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adr", "adr", "{0A04B1FD-06C
 	ProjectSection(SolutionItems) = preProject
 		doc\adr\0001-record-architecture-decisions.md = doc\adr\0001-record-architecture-decisions.md
 		doc\adr\0002-fault-propagation-from-child-to-parent-activities.md = doc\adr\0002-fault-propagation-from-child-to-parent-activities.md
-		doc\adr\toc.md = doc\adr\toc.md
-		doc\adr\graph.dot = doc\adr\graph.dot
 		doc\adr\0003-direct-bookmark-management-in-workflowexecutioncontext.md = doc\adr\0003-direct-bookmark-management-in-workflowexecutioncontext.md
+		doc\adr\0004-token-centric-flowchart-execution-model.md = doc\adr\0004-token-centric-flowchart-execution-model.md
+		doc\adr\graph.dot = doc\adr\graph.dot
+		doc\adr\toc.md = doc\adr\toc.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bounty", "bounty", "{9B80A705-2E31-4012-964A-83963DCDB384}"
@@ -783,26 +772,6 @@ Global
 		{BF934627-F531-44FB-BEC2-ECA801FF31E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF934627-F531-44FB-BEC2-ECA801FF31E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF934627-F531-44FB-BEC2-ECA801FF31E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3BED411B-79B5-4CCC-BD46-9549A427B908}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3BED411B-79B5-4CCC-BD46-9549A427B908}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3BED411B-79B5-4CCC-BD46-9549A427B908}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3BED411B-79B5-4CCC-BD46-9549A427B908}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA5E857F-B173-4B5D-8049-B817A210DEF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA5E857F-B173-4B5D-8049-B817A210DEF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA5E857F-B173-4B5D-8049-B817A210DEF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA5E857F-B173-4B5D-8049-B817A210DEF5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A51F9683-DA9F-45E7-82DE-1E261ACD6D68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A51F9683-DA9F-45E7-82DE-1E261ACD6D68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A51F9683-DA9F-45E7-82DE-1E261ACD6D68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A51F9683-DA9F-45E7-82DE-1E261ACD6D68}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75E08B0E-A41A-425C-9DCA-155505CE41CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75E08B0E-A41A-425C-9DCA-155505CE41CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75E08B0E-A41A-425C-9DCA-155505CE41CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -956,12 +925,6 @@ Global
 		{2F3E1026-5054-4E1F-899B-F1A7F70F9912} = {5BA4A8FA-F7F4-45B3-AEC8-8886D35AAC79}
 		{D5720DBC-8C2B-42D5-9D9F-2FF6EAD4001C} = {2F3E1026-5054-4E1F-899B-F1A7F70F9912}
 		{BF934627-F531-44FB-BEC2-ECA801FF31E7} = {DD089B8B-DA73-492A-9010-F772D1C178DA}
-		{A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E} = {5BA4A8FA-F7F4-45B3-AEC8-8886D35AAC79}
-		{FD3CD5A8-E9B3-467F-90EB-2B7D5B83F348} = {A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}
-		{3BED411B-79B5-4CCC-BD46-9549A427B908} = {A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}
-		{6CC5FBC7-D3D7-4FE3-AD08-C67939BDB24D} = {A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}
-		{FA5E857F-B173-4B5D-8049-B817A210DEF5} = {A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}
-		{A51F9683-DA9F-45E7-82DE-1E261ACD6D68} = {A0DC5F8E-5D7F-4E8A-A5DF-B1FC31F7336E}
 		{66E2E2CF-967F-4564-89E8-F46FA973C99B} = {986E5482-0482-448C-B9E4-EC67A9474B85}
 		{9DF81143-2F39-4CFB-9DA3-902279010622} = {5BA4A8FA-F7F4-45B3-AEC8-8886D35AAC79}
 		{75E08B0E-A41A-425C-9DCA-155505CE41CD} = {9DF81143-2F39-4CFB-9DA3-902279010622}
@@ -971,6 +934,8 @@ Global
 		{DF0CA7E2-F5DF-40ED-91B6-748767084FC7} = {9DF81143-2F39-4CFB-9DA3-902279010622}
 		{DB20B168-CD90-41F2-BE08-3D8C6F142459} = {9DF81143-2F39-4CFB-9DA3-902279010622}
 		{8A050229-DB79-4E0B-9AFF-7565E87F2954} = {B08B4E00-C2AB-48F3-8389-449F42AEF179}
+		{0A04B1FD-06C0-4271-A910-A08C263DBC44} = {0354F050-3992-4DD4-B0EE-5FBA04AC72B6}
+		{9B80A705-2E31-4012-964A-83963DCDB384} = {0354F050-3992-4DD4-B0EE-5FBA04AC72B6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D4B5CEAA-7D70-4FCB-A68E-B03FBE5E0E5E}
