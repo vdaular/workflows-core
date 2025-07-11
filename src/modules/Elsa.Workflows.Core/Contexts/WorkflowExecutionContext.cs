@@ -85,6 +85,28 @@ public partial class WorkflowExecutionContext : IExecutionContext
         _cancellationTokenSources.Add(linkedCancellationTokenSource);
         _cancellationRegistrations.Add(linkedCancellationTokenSource.Token.Register(CancelWorkflow));
     }
+    
+    /// <summary>
+    /// Creates a new <see cref="WorkflowExecutionContext"/> for the specified workflow.
+    /// </summary>
+    public static async Task<WorkflowExecutionContext> CreateAsync(
+        IServiceProvider serviceProvider,
+        WorkflowGraph workflowGraph,
+        string id,
+        CancellationToken cancellationToken = default)
+    {
+        var systemClock = serviceProvider.GetRequiredService<ISystemClock>();
+
+        return await CreateAsync(
+            serviceProvider,
+            workflowGraph,
+            id,
+            new List<ActivityIncident>(),
+            new List<Bookmark>(),
+            systemClock.UtcNow,
+            cancellationToken: cancellationToken
+        );
+    }
 
     /// <summary>
     /// Creates a new <see cref="WorkflowExecutionContext"/> for the specified workflow.
@@ -551,7 +573,7 @@ public partial class WorkflowExecutionContext : IExecutionContext
         var now = SystemClock.UtcNow;
         var id = IdentityGenerator.GenerateId();
         var activityExecutionContext = new ActivityExecutionContext(id, this, parentContext, activity, activityDescriptor, now, tag, SystemClock, CancellationToken);
-        var variablesToDeclare = options?.Variables ?? Array.Empty<Variable>();
+        var variablesToDeclare = options?.Variables ?? [];
         var variableContainer = new[]
         {
             activityExecutionContext.ActivityNode

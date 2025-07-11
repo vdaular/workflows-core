@@ -24,6 +24,7 @@ using Elsa.Workflows.Services;
 using Elsa.Workflows.UIHints.CheckList;
 using Elsa.Workflows.UIHints.Dropdown;
 using Elsa.Workflows.UIHints.JsonEditor;
+using Elsa.Workflows.UIHints.RadioList;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Elsa.Workflows.Features;
@@ -162,6 +163,7 @@ public class WorkflowsFeature : FeatureBase
             // Core.
             .AddScoped<IActivityInvoker, ActivityInvoker>()
             .AddScoped<IWorkflowRunner, WorkflowRunner>()
+            .AddScoped<IActivityTestRunner, ActivityTestRunner>()
             .AddScoped<IActivityVisitor, ActivityVisitor>()
             .AddScoped<IIdentityGraphService, IdentityGraphService>()
             .AddScoped<IWorkflowGraphBuilder, WorkflowGraphBuilder>()
@@ -230,10 +232,12 @@ public class WorkflowsFeature : FeatureBase
             // UI hints.
             .AddScoped<IUIHintHandler, DropDownUIHintHandler>()
             .AddScoped<IUIHintHandler, CheckListUIHintHandler>()
+            .AddScoped<IUIHintHandler, RadioListUIHintHandler>()
             .AddScoped<IUIHintHandler, JsonEditorUIHintHandler>()
 
             // UI property handlers.
             .AddScoped<IPropertyUIHandler, StaticCheckListOptionsProvider>()
+            .AddScoped<IPropertyUIHandler, StaticRadioListOptionsProvider>()
             .AddScoped<IPropertyUIHandler, StaticDropDownOptionsProvider>()
             .AddScoped<IPropertyUIHandler, JsonCodeOptionsProvider>()
 

@@ -3,6 +3,7 @@ using Elsa.Extensions;
 using Elsa.Features.Abstractions;
 using Elsa.Features.Attributes;
 using Elsa.Features.Services;
+using Elsa.Http.Bookmarks;
 using Elsa.Http.ContentWriters;
 using Elsa.Http.DownloadableContentHandlers;
 using Elsa.Http.FileCaches;
@@ -10,10 +11,14 @@ using Elsa.Http.Handlers;
 using Elsa.Http.Options;
 using Elsa.Http.Parsers;
 using Elsa.Http.PortResolvers;
+using Elsa.Http.Resilience;
 using Elsa.Http.Selectors;
 using Elsa.Http.Services;
 using Elsa.Http.Tasks;
+using Elsa.Http.TriggerPayloadValidators;
 using Elsa.Http.UIHints;
+using Elsa.Resilience.Extensions;
+using Elsa.Resilience.Features;
 using Elsa.Workflows;
 using FluentStorage;
 using Microsoft.AspNetCore.Http;
@@ -28,6 +33,7 @@ namespace Elsa.Http.Features;
 /// Installs services related to HTTP services and activities.
 /// </summary>
 [DependsOn(typeof(HttpJavaScriptFeature))]
+[DependsOn(typeof(ResilienceFeature))]
 public class HttpFeature(IModule module) : FeatureBase(module)
 {
     private Func<IServiceProvider, IHttpEndpointRoutesProvider> _httpEndpointRouteProvider = sp => sp.GetRequiredService<DefaultHttpEndpointRoutesProvider>();
@@ -137,6 +143,8 @@ public class HttpFeature(IModule module) : FeatureBase(module)
 
             management.AddActivitiesFrom<HttpFeature>();
         });
+
+        Module.UseResilience(resilience => resilience.AddResilienceStrategyType<HttpResilienceStrategy>());
     }
 
     /// <inheritdoc />
@@ -166,7 +174,6 @@ public class HttpFeature(IModule module) : FeatureBase(module)
             .AddHttpContextAccessor()
 
             // Handlers.
-            .AddNotificationHandler<ValidateWorkflowRequestHandler>()
             .AddNotificationHandler<UpdateRouteTable>()
 
             // Content parsers.
@@ -213,6 +220,9 @@ public class HttpFeature(IModule module) : FeatureBase(module)
             .AddScoped<IDownloadableContentHandler, UrlDownloadableContentHandler>()
             .AddScoped<IDownloadableContentHandler, StringDownloadableContentHandler>()
             .AddScoped<IDownloadableContentHandler, HttpFileDownloadableContentHandler>()
+
+            //Trigger payload validators.
+            .AddTriggerPaylodValidator<HttpEndpointTriggerPayloadValidator, HttpEndpointBookmarkPayload>()
 
             // File caches.
             .AddScoped(FileCache)
